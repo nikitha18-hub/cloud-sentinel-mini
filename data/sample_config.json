@@ -1,0 +1,7 @@
+{
+  "public_storage_access": true,
+  "encryption_enabled": false,
+  "logging_enabled": true,
+  "unrestricted_ssh": true,
+  "excessive_iam_admin": false
+}
