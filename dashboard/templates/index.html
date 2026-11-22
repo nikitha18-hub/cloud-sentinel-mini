@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050816">
+  <meta name="description" content="An educational, simulated cloud security configuration dashboard.">
+  <title>CloudSentinel Mini | Security Posture Simulator</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <canvas id="network-canvas" aria-hidden="true"></canvas>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+
+  <nav class="navbar" aria-label="Main navigation">
+    <a class="brand" href="#home" aria-label="CloudSentinel Mini home">
+      <svg class="brand-mark" viewBox="0 0 32 36" role="img" aria-label="Shield">
+        <path d="M16 2 28 7v9c0 8-5 14-12 18C9 30 4 24 4 16V7L16 2Z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="m10 17 4 4 8-9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </svg>
+      <span>CloudSentinel <span class="brand-light">Mini</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#console">Scan Console</a>
+      <a href="#architecture">How it works</a>
+      <a href="#scope">Limitations</a>
+    </div>
+    <div class="navbar-actions">
+      <span class="simulated-pill">SIMULATED DATA</span>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <section id="home" class="hero page-shell">
+      <svg class="hero-art" viewBox="0 0 140 160" role="img" aria-labelledby="hero-shield-title">
+        <title id="hero-shield-title">A glowing shield representing simulated security checks</title>
+        <defs>
+          <linearGradient id="hero-shield-gradient" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#22d3ee"/>
+            <stop offset="1" stop-color="#8b5cf6"/>
+          </linearGradient>
+        </defs>
+        <path class="shield-outline" d="M70 8 122 29v39c0 36-22 64-52 82C40 132 18 104 18 68V29L70 8Z" fill="rgba(34,211,238,.04)" stroke="url(#hero-shield-gradient)" stroke-width="3"/>
+        <path d="m45 77 17 17 35-39" fill="none" stroke="#dffcff" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
+        <circle cx="70" cy="73" r="63" fill="none" stroke="rgba(34,211,238,.16)" stroke-width="1"/>
+      </svg>
+      <p class="hero-kicker">Cloud posture · explained</p>
+      <h1 class="gradient-text">CloudSentinel<br>Mini</h1>
+      <p class="type-line"><span id="typewriter-text">Scan. Detect. Secure.</span><span class="type-cursor" aria-hidden="true">▍</span></p>
+      <p class="hero-description">Explore five common configuration checks in a cinematic, hands-on security simulation. No cloud account. No real infrastructure. Just a clear path to safer defaults.</p>
+      <div class="hero-actions">
+        <a class="button button-primary magnetic-button" href="#console">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4.5 15 10l-8 5.5v-11Z" fill="currentColor"/></svg>
+          Start Scan
+        </a>
+        <a class="button magnetic-button" href="#architecture">How it works <span aria-hidden="true">↓</span></a>
+      </div>
+    </section>
+
+    <section class="metrics-ribbon page-shell" aria-label="Demo facts">
+      <div class="metric"><strong>05</strong><span>Configuration checks</span></div>
+      <div class="metric"><strong>02</strong><span>Severity levels</span></div>
+      <div class="metric"><strong>100</strong><span>Point demo score</span></div>
+      <div class="metric"><strong>100%</strong><span>Simulated data</span></div>
+    </section>
+
+    <section id="console" class="section page-shell section-reveal">
+      <header class="section-heading">
+        <p class="section-kicker">01 / Configure your simulation</p>
+        <h2>Scan console</h2>
+        <p>Edit the JSON or use the switches. Changes stay in this browser until you run a simulated scan.</p>
+      </header>
+
+      <div class="console-grid">
+        <section class="glass-card console-pane" aria-labelledby="editor-heading">
+          <div class="pane-heading">
+            <div>
+              <h3 id="editor-heading">Configuration editor</h3>
+              <p class="pane-caption">Five boolean settings · JSON format</p>
+            </div>
+            <span id="validation-badge" class="validation-badge" role="status" aria-live="polite">Checking…</span>
+          </div>
+          <div class="editor-shell">
+            <div id="line-numbers" class="line-numbers" aria-hidden="true">1</div>
+            <textarea id="config-editor" class="json-editor" aria-label="Editable JSON configuration" aria-describedby="editor-help missing-notice error-alert" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+          </div>
+          <p id="editor-help" class="editor-help">Use <code>true</code> or <code>false</code>. Unsafe switches are marked in red and described clearly.</p>
+          <p id="missing-notice" class="missing-notice" role="status" aria-live="polite" hidden></p>
+          <div class="preset-row" role="group" aria-label="Configuration presets">
+            <button class="preset-chip" type="button" data-preset="unsafe">All Unsafe</button>
+            <button class="preset-chip" type="button" data-preset="secure">All Secure</button>
+            <button class="preset-chip" type="button" data-preset="missing">Missing Values</button>
+            <button class="preset-chip" type="button" data-preset="invalid">Invalid JSON</button>
+          </div>
+          <div id="error-alert" class="error-alert" role="alert" aria-live="assertive"></div>
+        </section>
+
+        <section class="glass-card console-pane console-pane-settings" aria-labelledby="settings-heading">
+          <div class="pane-heading">
+            <div>
+              <h3 id="settings-heading">Security controls</h3>
+              <p class="pane-caption">ON means the setting in the label is enabled.</p>
+            </div>
+          </div>
+          <div id="settings-list" class="settings-list">
+            <article class="setting-card" data-setting="public_storage_access">
+              <div class="setting-topline">
+                <h4 class="setting-title">Public access enabled</h4>
+                <span class="state-chip" data-state>SAFE</span>
+              </div>
+              <p class="setting-description">ON exposes storage publicly · OFF keeps it private.</p>
+              <div class="setting-bottomline">
+                <label class="toggle-control">
+                  <input type="checkbox" data-toggle="public_storage_access" aria-label="Enable public storage access">
+                  <span class="toggle-track" aria-hidden="true"></span><span>ON / OFF</span>
+                </label>
+              </div>
+            </article>
+            <article class="setting-card" data-setting="encryption_enabled">
+              <div class="setting-topline">
+                <h4 class="setting-title">Encryption enabled</h4>
+                <span class="state-chip" data-state>SAFE</span>
+              </div>
+              <p class="setting-description">ON encrypts stored data · OFF leaves it unencrypted.</p>
+              <div class="setting-bottomline">
+                <label class="toggle-control">
+                  <input type="checkbox" data-toggle="encryption_enabled" aria-label="Enable storage encryption">
+                  <span class="toggle-track" aria-hidden="true"></span><span>ON / OFF</span>
+                </label>
+              </div>
+            </article>
+            <article class="setting-card" data-setting="logging_enabled">
+              <div class="setting-topline">
+                <h4 class="setting-title">Audit logging enabled</h4>
+                <span class="state-chip" data-state>SAFE</span>
+              </div>
+              <p class="setting-description">ON records activity · OFF disables audit logs.</p>
+              <div class="setting-bottomline">
+                <label class="toggle-control">
+                  <input type="checkbox" data-toggle="logging_enabled" aria-label="Enable audit logging">
+                  <span class="toggle-track" aria-hidden="true"></span><span>ON / OFF</span>
+                </label>
+              </div>
+            </article>
+            <article class="setting-card" data-setting="unrestricted_ssh">
+              <div class="setting-topline">
+                <h4 class="setting-title">Unrestricted SSH enabled</h4>
+                <span class="state-chip" data-state>SAFE</span>
+              </div>
+              <p class="setting-description">ON opens SSH to any source · OFF restricts access.</p>
+              <div class="setting-bottomline">
+                <label class="toggle-control">
+                  <input type="checkbox" data-toggle="unrestricted_ssh" aria-label="Enable unrestricted SSH access">
+                  <span class="toggle-track" aria-hidden="true"></span><span>ON / OFF</span>
+                </label>
+              </div>
+            </article>
+            <article class="setting-card" data-setting="excessive_iam_admin">
+              <div class="setting-topline">
+                <h4 class="setting-title">Excessive admin privileges enabled</h4>
+                <span class="state-chip" data-state>SAFE</span>
+              </div>
+              <p class="setting-description">ON gives excessive IAM access · OFF follows least privilege.</p>
+              <div class="setting-bottomline">
+                <label class="toggle-control">
+                  <input type="checkbox" data-toggle="excessive_iam_admin" aria-label="Enable excessive IAM admin privileges">
+                  <span class="toggle-track" aria-hidden="true"></span><span>ON / OFF</span>
+                </label>
+              </div>
+            </article>
+          </div>
+          <div class="console-actions">
+            <button id="scan-button" class="button button-primary magnetic-button" type="button">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4.5 15 10l-8 5.5v-11Z" fill="currentColor"/></svg>
+              Run simulated scan
+            </button>
+            <small>Results are produced from the five rules in this demo.</small>
+          </div>
+        </section>
+      </div>
+
+      <section id="scan-sequence" class="glass-card scan-sequence" aria-label="Scan progress" aria-live="polite" hidden>
+        <svg class="radar" viewBox="0 0 200 200" role="img" aria-label="Animated radar sweep">
+          <defs>
+            <linearGradient id="radar-gradient" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#22d3ee" stop-opacity="0"/>
+              <stop offset="1" stop-color="#22d3ee" stop-opacity=".8"/>
+            </linearGradient>
+          </defs>
+          <circle cx="100" cy="100" r="88" fill="rgba(34,211,238,.025)" stroke="rgba(34,211,238,.24)"/>
+          <circle cx="100" cy="100" r="61" fill="none" stroke="rgba(34,211,238,.18)"/>
+          <circle cx="100" cy="100" r="32" fill="none" stroke="rgba(34,211,238,.18)"/>
+          <path d="M12 100h176M100 12v176" stroke="rgba(34,211,238,.15)"/>
+          <path class="radar-sweep" d="M100 100V12A88 88 0 0 1 162 38Z" fill="url(#radar-gradient)"/>
+          <circle cx="100" cy="100" r="4" fill="#22d3ee"/>
+        </svg>
+        <div class="scan-console">
+          <p class="terminal-title">cloudsentinel://simulator — running local rules</p>
+          <div id="terminal-log" class="terminal" role="log" aria-live="polite"></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="results-dashboard" class="section page-shell results-section" aria-labelledby="results-heading" hidden>
+      <header class="section-heading">
+        <p class="section-kicker">02 / Simulation complete</p>
+        <h2 id="results-heading">Your security snapshot</h2>
+        <p>Five local rule checks · no cloud connection · no official security rating.</p>
+      </header>
+      <div id="results-skeleton" class="skeleton-grid" aria-hidden="true">
+        <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+      </div>
+
+      <div id="results-content" class="results-content">
+        <div class="results-overview">
+          <section class="glass-card score-card" aria-labelledby="score-heading">
+            <div class="score-gauge">
+              <svg viewBox="0 0 180 180" role="img" aria-labelledby="score-heading score-description">
+                <circle class="gauge-track" cx="90" cy="90" r="75"/>
+                <circle id="score-ring" class="gauge-progress" cx="90" cy="90" r="75" data-score-state="high"/>
+              </svg>
+              <div class="gauge-value"><strong id="score-value">0</strong><span>/100</span></div>
+            </div>
+            <h3 id="score-heading">Demo score</h3>
+            <p id="score-description" class="fine-print">Demonstration score, not an official security rating.</p>
+          </section>
+
+          <div class="stats-grid" aria-label="Finding counts">
+            <article class="glass-card stat-card stat-risk">
+              <span class="stat-icon" aria-hidden="true">!</span>
+              <strong id="risk-count" class="stat-value">0</strong>
+              <span class="stat-label">Risks detected</span>
+              <span class="stat-detail">Needs attention</span>
+            </article>
+            <article class="glass-card stat-card stat-secure">
+              <span class="stat-icon" aria-hidden="true">✓</span>
+              <strong id="secure-count" class="stat-value">0</strong>
+              <span class="stat-label">Secure</span>
+              <span class="stat-detail">Good configuration</span>
+            </article>
+            <article class="glass-card stat-card stat-unchecked">
+              <span class="stat-icon" aria-hidden="true">—</span>
+              <strong id="unchecked-count" class="stat-value">0</strong>
+              <span class="stat-label">Not checked</span>
+              <span class="stat-detail">No result available</span>
+            </article>
+          </div>
+        </div>
+
+        <div class="visuals-grid">
+          <section class="glass-card visual-card" aria-labelledby="attack-heading">
+            <div class="results-topline">
+              <div>
+                <p class="section-kicker">Exposure map</p>
+                <h3 id="attack-heading" class="result-title">Attack surface</h3>
+              </div>
+              <span class="visual-legend"><i class="legend-dot legend-risk"></i> risk <i class="legend-dot legend-secure"></i> secure</span>
+            </div>
+            <svg class="attack-map" viewBox="0 0 440 330" role="img" aria-label="Five check nodes around a central shield">
+              <g class="attack-links" aria-hidden="true">
+                <path d="M220 155 220 39M220 155 371 106M220 155 315 286M220 155 125 286M220 155 69 106"/>
+                <path d="M220 39 371 106 315 286 125 286 69 106Z"/>
+              </g>
+              <g class="attack-center">
+                <circle cx="220" cy="155" r="39"/>
+                <path d="m220 128 19 8v14c0 14-8 23-19 30-11-7-19-16-19-30v-14l19-8Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="m211 153 6 6 12-13" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+              </g>
+              <g class="attack-node" data-node="public_storage_access" transform="translate(220 39)">
+                <circle class="node-halo" r="18"/><circle class="node-core" r="7"/>
+                <text x="0" y="-25">Storage</text>
+              </g>
+              <g class="attack-node" data-node="encryption_enabled" transform="translate(371 106)">
+                <circle class="node-halo" r="18"/><circle class="node-core" r="7"/>
+                <text x="26" y="4">Encryption</text>
+              </g>
+              <g class="attack-node" data-node="logging_enabled" transform="translate(315 286)">
+                <circle class="node-halo" r="18"/><circle class="node-core" r="7"/>
+                <text x="23" y="5">Logging</text>
+              </g>
+              <g class="attack-node" data-node="unrestricted_ssh" transform="translate(125 286)">
+                <circle class="node-halo" r="18"/><circle class="node-core" r="7"/>
+                <text x="-24" y="5" text-anchor="end">SSH</text>
+              </g>
+              <g class="attack-node" data-node="excessive_iam_admin" transform="translate(69 106)">
+                <circle class="node-halo" r="18"/><circle class="node-core" r="7"/>
+                <text x="-25" y="4" text-anchor="end">IAM</text>
+              </g>
+            </svg>
+          </section>
+
+          <section class="glass-card visual-card severity-card" aria-labelledby="severity-heading">
+            <p class="section-kicker">Finding distribution</p>
+            <h3 id="severity-heading" class="result-title">Severity breakdown</h3>
+            <p class="pane-caption">Only detected risks contribute to severity.</p>
+            <div id="severity-bar" class="severity-bar" role="img" aria-label="No risks detected">
+              <span id="high-segment" class="severity-segment severity-high"></span>
+              <span id="medium-segment" class="severity-segment severity-medium"></span>
+            </div>
+            <div class="severity-legend">
+              <span><i class="legend-dot legend-risk"></i> HIGH <strong id="high-count">0</strong></span>
+              <span><i class="legend-dot legend-medium"></i> MEDIUM <strong id="medium-count">0</strong></span>
+            </div>
+            <div class="breakdown-note">
+              <span>Every risk can be addressed</span>
+              <span>Suggested steps below ↓</span>
+            </div>
+          </section>
+        </div>
+
+        <section class="results-lower-grid" aria-label="Detailed scan findings">
+          <div class="findings-column">
+            <div class="results-topline findings-heading">
+              <div>
+                <p class="section-kicker">Rule-by-rule</p>
+                <h3 class="result-title">Security checks</h3>
+              </div>
+              <span id="checks-complete" class="checks-complete">0 / 5 checked</span>
+            </div>
+            <div id="check-cards" class="check-cards"></div>
+          </div>
+
+          <aside class="glass-card fix-first" aria-labelledby="fix-heading">
+            <p class="section-kicker">Recommended next</p>
+            <h3 id="fix-heading" class="result-title">Fix first</h3>
+            <p class="pane-caption">Prioritized by the simulated severity.</p>
+            <ol id="fix-list" class="fix-list"></ol>
+            <div class="download-wrap">
+              <button id="report-button" class="button button-primary magnetic-button" type="button">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2v10m0 0 4-4m-4 4L6 8M3 14v3h14v-3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg>
+                Download CSV report
+              </button>
+              <p class="fine-print">A copy is also saved in the project reports folder.</p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="glass-card table-card" aria-labelledby="table-heading">
+          <div class="results-topline">
+            <div>
+              <p class="section-kicker">Complete output</p>
+              <h3 id="table-heading" class="result-title">Results table</h3>
+            </div>
+            <button id="sort-status" class="preset-chip" type="button" aria-label="Sort results by status">Sort by status ↕</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th scope="col">Check</th><th scope="col">Status</th><th scope="col">Risk level</th><th scope="col">Recommendation</th></tr>
+              </thead>
+              <tbody id="results-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="architecture" class="section page-shell section-reveal" aria-labelledby="architecture-heading">
+      <header class="section-heading">
+        <p class="section-kicker">03 / A transparent pipeline</p>
+        <h2 id="architecture-heading">How it works</h2>
+        <p>Your local inputs travel through five simple rule checks. Nothing reaches a cloud provider.</p>
+      </header>
+      <div class="glass-card architecture-strip">
+        <div class="architecture-flow" aria-label="User, Dashboard, JSON, Scanner, Rule Engine, Results, CSV">
+          <div class="architecture-line" aria-hidden="true"></div>
+          <div class="architecture-dot" aria-hidden="true"></div>
+          <div class="architecture-node"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-4 2.5-6 7-6s7 2 7 6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span><span>User</span></div>
+          <div class="architecture-node"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 8h18" stroke="currentColor" stroke-width="1.6"/></svg></span><span>Dashboard</span></div>
+          <div class="architecture-node"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 3 12l5 7m8-14 5 7-5 7m-2-16-4 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/></svg></span><span>JSON</span></div>
+          <div class="architecture-node"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3 8 8 10 5-2 8-5 8-10V6l-8-3Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m9 12 2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span><span>Scanner</span></div>
+          <div class="architecture-node"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 12h14M5 19h14M8 3v4m8 3v4M8 17v4" stroke="currentColor" stroke-linecap="round" stroke-width="1.6"/></svg></span><span>Rule Engine</span></div>
+          <div class="architecture-node"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h17M8 15l4-4 3 2 5-7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6"/></svg></span><span>Results</span></div>
+          <div class="architecture-node"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 3v6h5M8 14h7m-7 4h7" stroke="currentColor" stroke-width="1.6"/></svg></span><span>CSV</span></div>
+        </div>
+        <p class="architecture-caption">Browser input <span aria-hidden="true">→</span> local rules <span aria-hidden="true">→</span> downloadable report</p>
+      </div>
+    </section>
+
+    <section id="scope" class="section page-shell section-reveal" aria-labelledby="scope-heading">
+      <header class="section-heading">
+        <p class="section-kicker">04 / Know the boundaries</p>
+        <h2 id="scope-heading">Built to teach, not to connect</h2>
+        <p>CloudSentinel Mini is a local learning prototype. It never accesses real infrastructure.</p>
+      </header>
+      <div class="scope-grid">
+        <article class="glass-card scope-card">
+          <h3>Limitations</h3>
+          <ul>
+            <li>Uses only five simulated boolean settings</li>
+            <li>No live AWS or other cloud-provider connection</li>
+            <li>No CloudTrail, IAM policy, or network discovery</li>
+            <li>Demo score is not a compliance or security rating</li>
+          </ul>
+        </article>
+        <article class="glass-card scope-card">
+          <h3>Future scope</h3>
+          <ul>
+            <li>Read-only AWS integration with explicit consent</li>
+            <li>CloudTrail event and IAM policy analysis</li>
+            <li>Multi-cloud configuration support</li>
+            <li>Continuous monitoring and change history</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer page-shell">
+    <div class="footer-inner">
+      <span><strong>CloudSentinel Mini</strong> · Educational prototype · Simulated data only</span>
+      <span>Team: <strong>[Team Member 1]</strong> · <strong>[Team Member 2]</strong></span>
+    </div>
+  </footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/static/script.js" defer></script>
+</body>
+</html>
